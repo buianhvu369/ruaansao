@@ -1,4 +1,5 @@
 package buianhvu.pac;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -16,6 +17,7 @@ public class Shark extends Actor {
     int time;
     Polygon polygon;
     int dan =0;
+    float huong = 1;
     Shark(float x,float y, Stage s){
         textureregion = new TextureRegion(new Texture("sharky.png")) ;
         setPosition(x,y);
@@ -53,7 +55,7 @@ public class Shark extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        batch.draw(textureregion, getX(), getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),1,1,getRotation());
+        batch.draw(textureregion, getX(), getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(), getScaleY(),getRotation());
     }
 
     @Override
@@ -63,8 +65,11 @@ public class Shark extends Actor {
         polygon.setRotation(getRotation());
         polygon.setPosition(getX(),getY());
         if(dan == 0) {
-            rotateBy(-1);
-            moveBy(3 * MathUtils.cosDeg(getRotation()), 3 * MathUtils.sinDeg(getRotation()));
+            moveBy(huong * 3 * MathUtils.cosDeg(getRotation()), huong * 3 * MathUtils.sinDeg(getRotation()));
+        }
+        if((getX() < 0 || getX() > Gdx.graphics.getWidth()) || (getY() < 0 || getY() > Gdx.graphics.getHeight())){
+            setScaleX(-huong);
+            huong *= -1;
         }
     }
     void duoi(float xt,float yt){
