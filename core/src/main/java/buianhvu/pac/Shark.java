@@ -9,6 +9,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
+import java.util.Random;
+
+import static java.lang.Math.random;
 import static java.lang.Math.sqrt;
 
 
@@ -16,9 +19,11 @@ public class Shark extends Actor {
     TextureRegion textureregion;
     int time;
     Polygon polygon;
+    Random ran;
     int dan =0;
     float huong = 1;
     Shark(float x,float y, Stage s){
+        ran = new Random();
         textureregion = new TextureRegion(new Texture("sharky.png")) ;
         setPosition(x,y);
         setRotation(-90);
@@ -64,12 +69,15 @@ public class Shark extends Actor {
         setOrigin(getWidth()/2,getHeight()/2);
         polygon.setRotation(getRotation());
         polygon.setPosition(getX(),getY());
+        polygon.setOrigin(getOriginX(),getOriginY());
+        polygon.setScale(getScaleX(),getScaleY());
         if(dan == 0) {
             moveBy(huong * 3 * MathUtils.cosDeg(getRotation()), huong * 3 * MathUtils.sinDeg(getRotation()));
         }
         if((getX() < 0 || getX() > Gdx.graphics.getWidth()) || (getY() < 0 || getY() > Gdx.graphics.getHeight())){
             setScaleX(-huong);
             huong *= -1;
+            setRotation(ran.nextInt(359));
         }
     }
     void duoi(float xt,float yt){

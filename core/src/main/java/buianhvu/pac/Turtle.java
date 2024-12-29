@@ -63,7 +63,7 @@ public class Turtle extends Actor {
             time += delta;
         }
         if(koda){
-            if(Gdx.input.isKeyPressed(Input.Keys.UP) && speed<4f){
+            if(Gdx.input.isKeyPressed(Input.Keys.UP) && speed<5f){
                 speed += 0.1f;
             }
             if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){

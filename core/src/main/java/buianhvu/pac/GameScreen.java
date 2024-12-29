@@ -36,8 +36,8 @@ public class GameScreen implements Screen {
     Solid rock2;
     Solid rock3;
     Solid rock4;
-    Sigh sigh;
-    Sigh sigh2;
+    Solid sigh;
+    Solid sigh2;
     StarFish baoquan;
     StarFish haiquan;
     StarFish bao;
@@ -57,9 +57,11 @@ public class GameScreen implements Screen {
     Texture pressc;
     Texture soundButtonImage;
     int starfish = 5;
+    float cd = 0;
     Array<Laze> lasers;
     Boolean kt = false;
     Boolean audio = true;
+    Array <Shark> sharks;
     public GameScreen(Master game){
         this.game = game;
         stage = new Stage();
@@ -78,6 +80,7 @@ public class GameScreen implements Screen {
         starfish = 5;
 
         lasers = new Array<>();
+        sharks = new Array<>();
 
         dropSound = Gdx.audio.newSound(Gdx.files.internal("drop1.ogg"));
         lasersound = Gdx.audio.newSound(Gdx.files.internal("sfx_laser1.ogg"));
@@ -91,12 +94,12 @@ public class GameScreen implements Screen {
         pressc = new Texture("message-continue.png");
         soundButtonImage = new Texture("audio.png");
 
-        rock = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight()-64),stage,rockImage);
-        rock2 = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,rockImage);
-        rock3 = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,rockImage);
-        rock4 = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,rockImage);
-        sigh = new Sigh(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,sighImage);
-        sigh2 = new Sigh(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,sighImage);
+        rock = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight()-64),stage,rockImage,true);
+        rock2 = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,rockImage,true);
+        rock3 = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,rockImage,true);
+        rock4 = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,rockImage,true);
+        sigh = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,sighImage,false);
+        sigh2 = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,sighImage,false);
         turtle = new Turtle(new Texture("sprite.png"),3,2,stage);
         baoquan = new StarFish(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage) ;
         haiquan = new StarFish(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage) ;
@@ -135,6 +138,7 @@ public class GameScreen implements Screen {
                 }
             }
         });
+
     }
 
     @Override
@@ -159,18 +163,41 @@ public class GameScreen implements Screen {
         }
         game.batch.end();
         if(kt == false){
+            cd += 1/60f;
             if(audio){
                 nenMusic.play();
             }
+            for (Shark thuy : sharks) {
+                if (Intersector.overlapConvexPolygons(turtle.getPolygon(), thuy.getPolygon())) {
+                    kt = true;
+                    tank.setPosition(turtle.getX(),turtle.getY());
+                }
+            }
+            if(input.isButtonJustPressed(Input.Keys.Q)){
+
+            }
             if (input.isKeyJustPressed(Input.Keys.SPACE)) {
-                Laze laser = new Laze(0, 0, stage);
+                Laze laser = new Laze(0, 0, stage, new Texture("laser.png"));
                 laser.setPosition(turtle.getX() + turtle.getWidth() / 2 - laser.getWidth() / 2, turtle.getY() + turtle.getHeight() / 2 - laser.getHeight() / 2);
                 laser.setRotation(turtle.getRotation());
                 lasersound.play();
                 lasers.add(laser);
+
+                Laze laser2 = new Laze(0, 0, stage, new Texture("laser.png"));
+                laser2.setPosition(turtle.getX() + turtle.getWidth() / 2 - laser2.getWidth() / 2, turtle.getY() + turtle.getHeight() / 2 - laser2.getHeight() / 2);
+                laser2.setRotation(turtle.getRotation());
+                laser2.rotateBy(180);
+                lasersound.play();
+                lasers.add(laser2);
                 starfish += 2;
             }
-
+            for (Shark thuy : sharks) {
+                if(tank.dan == 1){
+                    thuy.dan = 1;
+                    thuy.duoi(turtle.getX(), turtle.getY());
+//                    thuy.rotateBy(-ran.nextInt(0,360));
+                }
+            }
             for (Laze laser : lasers) {
                 if (Intersector.overlapConvexPolygons(laser.getPolygon(), rock.getPolygon())) {
                     rock.setPosition(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64));
@@ -278,20 +305,29 @@ public class GameScreen implements Screen {
             stage.draw();
             stage.act();
             tank.duoi(turtle.getX(), turtle.getY());
+            if(tank.dan == 1 && cd > 3){
+                Shark thuy = new Shark(Gdx.graphics.getWidth(),ran.nextInt(0,Gdx.graphics.getHeight()),stage);
+                sharks.add(thuy);
+                cd = 0;
+            }
 
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            for(Shark thuy : sharks){
+                shapeRenderer.polygon(thuy.getPolygon().getTransformedVertices());
+            }
 //            shapeRenderer.polygon(turtle.getPolygon().getTransformedVertices());
 //            shapeRenderer.polygon(tank.getPolygon().getTransformedVertices());
             shapeRenderer.end();
-        }
-        if(input.isKeyJustPressed(Input.Keys.C) && kt){
-            game.setScreen(new MenuScreen(game));// goi man hinh moi
+        }else{
+            nenMusic.stop();
+            if(input.isKeyJustPressed(Input.Keys.C) && kt){
+                game.setScreen(new MenuScreen(game));// goi man hinh moi
+            }
         }
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 //        shapeRenderer.polygon(turtle.getPolygon().getTransformedVertices());
-//        shapeRenderer.polygon(tank.getPolygon().getTransformedVertices());
+        shapeRenderer.polygon(tank.getPolygon().getTransformedVertices());
         shapeRenderer.end();
-
     }
 
     @Override

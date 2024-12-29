@@ -18,8 +18,8 @@ public class Laze extends Actor {
     Polygon polygon;
     float laserx;
     float lasery;
-    Laze(float x, float y, Stage s){
-        textureregion = new TextureRegion(new Texture("laser.png")) ;
+    Laze(float x, float y, Stage s, Texture texture){
+        textureregion = new TextureRegion(texture) ;
         setPosition(x,y);
         setSize(textureregion.getRegionWidth(), textureregion.getRegionHeight());
         setOrigin(getWidth()/2,getHeight()/2);
