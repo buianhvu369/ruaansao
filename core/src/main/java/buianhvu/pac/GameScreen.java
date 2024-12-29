@@ -58,6 +58,7 @@ public class GameScreen implements Screen {
     Texture soundButtonImage;
     int starfish = 5;
     float cd = 0;
+    float timew = 3.2f;
     Array<Laze> lasers;
     Boolean kt = false;
     Boolean audio = true;
@@ -149,7 +150,7 @@ public class GameScreen implements Screen {
         game.batch.begin();
         game.batch.draw(nen, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.font.draw(game.batch, "starfish:" + String.valueOf(starfish), 0, Gdx.graphics.getHeight());
-        if (starfish < 1) {
+        if (starfish < 1 && timew < 0.1) {
             game.batch.draw(win, Gdx.graphics.getWidth() / 2 - win.getWidth() / 2, Gdx.graphics.getHeight() / 2 - win.getHeight() / 2);
             game.batch.draw(pressc, Gdx.graphics.getWidth() / 2 - pressc.getWidth() / 2, Gdx.graphics.getHeight() / 2 - pressc.getHeight() / 2 - gameover.getHeight() - 10);
             kt = true;
@@ -164,6 +165,9 @@ public class GameScreen implements Screen {
         game.batch.end();
         if(kt == false){
             cd += 1/60f;
+            if(starfish < 1){
+                timew -= 1/60f;
+            }
             if(audio){
                 nenMusic.play();
             }
@@ -196,6 +200,20 @@ public class GameScreen implements Screen {
                     thuy.dan = 1;
                     thuy.duoi(turtle.getX(), turtle.getY());
 //                    thuy.rotateBy(-ran.nextInt(0,360));
+                }
+                for (Laze laser2 : lasers){
+                    if (Intersector.overlapConvexPolygons(laser2.getPolygon(), thuy.getPolygon())) {
+                        thuy.setPosition(9999,9999);
+                        thuy.remove();
+                        laser2.setPosition(999,999);
+                        laser2.remove();
+                    }
+                    if (Intersector.overlapConvexPolygons(laser2.getPolygon(), tank.getPolygon())) {
+                        tank.setPosition(9999,9999);
+                        tank.remove();
+                        laser2.setPosition(999,999);
+                        laser2.remove();
+                    }
                 }
             }
             for (Laze laser : lasers) {
@@ -258,7 +276,11 @@ public class GameScreen implements Screen {
             }
 
             if (Intersector.overlapConvexPolygons(turtle.getPolygon(), baoquan.getPolygon())) {
-                an = new An(new Texture("whirlpool.png"), 5, 2);
+                if(starfish < 2){
+                    an = new An(new Texture("sparkle.png"),8,8);
+                }else{
+                    an = new An(new Texture("whirlpool.png"), 5, 2);
+                }
                 an.setPosition(baoquan.getX(), baoquan.getY());
                 baoquan.setPosition(ran.nextInt((int) (Gdx.graphics.getWidth() - baoquan.getWidth())), ran.nextInt((int) (Gdx.graphics.getHeight() - baoquan.getHeight())));
                 stage.addActor(an);
@@ -267,7 +289,9 @@ public class GameScreen implements Screen {
             }
 
             if (Intersector.overlapConvexPolygons(turtle.getPolygon(), haiquan.getPolygon())) {
-                an = new An(new Texture("whirlpool.png"), 5, 2);
+                if(starfish < 2){
+                    an = new An(new Texture("sparkle.png"),8,8);
+                }else{an = new An(new Texture("whirlpool.png"), 5, 2);}
                 an.setPosition(haiquan.getX(), haiquan.getY());
                 haiquan.setPosition(ran.nextInt((int) (Gdx.graphics.getWidth() - haiquan.getWidth())), ran.nextInt((int) (Gdx.graphics.getHeight() - haiquan.getHeight())));
                 stage.addActor(an);
@@ -276,7 +300,9 @@ public class GameScreen implements Screen {
             }
 
             if (Intersector.overlapConvexPolygons(turtle.getPolygon(), bao.getPolygon())) {
-                an = new An(new Texture("whirlpool.png"), 5, 2);
+                if(starfish < 2){
+                    an = new An(new Texture("sparkle.png"),8,8);
+                }else{an = new An(new Texture("whirlpool.png"), 5, 2);}
                 an.setPosition(bao.getX(), bao.getY());
                 bao.setPosition(ran.nextInt((int) (Gdx.graphics.getWidth() - bao.getWidth())), ran.nextInt((int) (Gdx.graphics.getHeight() - bao.getHeight())));
                 stage.addActor(an);
@@ -285,7 +311,9 @@ public class GameScreen implements Screen {
             }
 
             if (Intersector.overlapConvexPolygons(turtle.getPolygon(), nawn.getPolygon())) {
-                an = new An(new Texture("whirlpool.png"), 5, 2);
+                if(starfish < 2){
+                an = new An(new Texture("sparkle.png"),8,8);
+            }else{an = new An(new Texture("whirlpool.png"), 5, 2);}
                 an.setPosition(nawn.getX(), nawn.getY());
                 nawn.setPosition(ran.nextInt((int) (Gdx.graphics.getWidth() - nawn.getWidth())), ran.nextInt((int) (Gdx.graphics.getHeight() - nawn.getHeight())));
                 stage.addActor(an);
@@ -294,7 +322,10 @@ public class GameScreen implements Screen {
             }
 
             if (Intersector.overlapConvexPolygons(turtle.getPolygon(), sao.getPolygon())) {
-                an = new An(new Texture("whirlpool.png"), 5, 2);
+                if(starfish < 2){
+                    an = new An(new Texture("sparkle.png"),8,8);
+                }else{
+                    an = new An(new Texture("whirlpool.png"), 5, 2);}
                 an.setPosition(sao.getX(), sao.getY());
                 sao.setPosition(ran.nextInt((int) (Gdx.graphics.getWidth() - sao.getWidth())), ran.nextInt((int) (Gdx.graphics.getHeight() - sao.getHeight())));
                 stage.addActor(an);
