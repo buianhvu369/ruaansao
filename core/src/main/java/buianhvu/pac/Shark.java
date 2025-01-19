@@ -24,7 +24,7 @@ public class Shark extends Actor {
     float huong = 1;
     Shark(float x,float y, Stage s){
         ran = new Random();
-        textureregion = new TextureRegion(new Texture("sharky.png")) ;
+        textureregion = new TextureRegion(new Texture("sharkypaint.png")) ;
         setPosition(x,y);
         setRotation(-90);
         setSize(textureregion.getRegionWidth(), textureregion.getRegionHeight());

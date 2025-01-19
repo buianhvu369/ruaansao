@@ -19,9 +19,10 @@ public class Turtle extends Actor {
     Float speed = 0f;
     Boolean koda = true;
 
-    Turtle(Texture texture,int cot,int hang,Stage s){
+    Turtle(Texture texture,int cot,int hang,Stage s,float x,float y){
         s.addActor(this);
         setSize(texture.getWidth()/cot, texture.getHeight()/hang);
+        setPosition(x,y);
         float speed = 0.1f;
         TextureRegion[][] tam = TextureRegion.split(texture, texture.getWidth()/cot, texture.getHeight()/hang);// đưa tất cả vào danh một danh sách ảnh, vì 6 cột 1 hàng nên sẽ có 6 phần tử: 6 x 1
         TextureRegion[] frames = new TextureRegion[cot*hang];
@@ -59,6 +60,7 @@ public class Turtle extends Actor {
         setOrigin(getWidth()/2,getHeight()/2);
         polygon.setPosition(getX(),getY());
         polygon.setRotation(getRotation());
+        moveBy(speed * MathUtils.cosDeg(getRotation()),speed * MathUtils.sinDeg(getRotation()));
         if(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.LEFT)){
             time += delta;
         }
@@ -74,7 +76,7 @@ public class Turtle extends Actor {
             }
             speed *= 0.99f;
         }
-        moveBy(speed * MathUtils.cosDeg(getRotation()),speed * MathUtils.sinDeg(getRotation()));
+//        moveBy(speed * MathUtils.cosDeg(getRotation()),speed * MathUtils.sinDeg(getRotation()));
     }
 
     @Override

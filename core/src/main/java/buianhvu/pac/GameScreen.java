@@ -30,7 +30,7 @@ public class GameScreen implements Screen {
     OrthographicCamera camera;
     Master game;
     Stage stage;
-    Texture nen;
+    BackGround nen;
     Turtle turtle;
     Solid rock;
     Solid rock2;
@@ -70,6 +70,7 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
+        stage.clear();
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
@@ -83,25 +84,27 @@ public class GameScreen implements Screen {
         lasers = new Array<>();
         sharks = new Array<>();
 
+        System.out.println(camera.position.x);
+        System.out.println(camera.position.y);
+
         dropSound = Gdx.audio.newSound(Gdx.files.internal("drop1.ogg"));
         lasersound = Gdx.audio.newSound(Gdx.files.internal("sfx_laser1.ogg"));
         nenMusic = Gdx.audio.newMusic(Gdx.files.internal("Master_of_the_Feast.ogg"));
 
-        nen = new Texture("water-border.jpg");
+        nen = new BackGround(stage);
         rockImage = new Texture("rock.png");
         sighImage = new Texture("sign.png");
         win = new Texture("you-win.png");
         gameover = new Texture("game-over.png");
         pressc = new Texture("message-continue.png");
         soundButtonImage = new Texture("audio.png");
-
         rock = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight()-64),stage,rockImage,true);
         rock2 = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,rockImage,true);
         rock3 = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,rockImage,true);
         rock4 = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,rockImage,true);
         sigh = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,sighImage,false);
         sigh2 = new Solid(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage,sighImage,false);
-        turtle = new Turtle(new Texture("sprite.png"),3,2,stage);
+        turtle = new Turtle(new Texture("sprite.png"),3,2,stage, (float) Gdx.graphics.getWidth() /2, (float) Gdx.graphics.getHeight() /2);
         baoquan = new StarFish(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage) ;
         haiquan = new StarFish(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage) ;
         bao = new StarFish(ran.nextInt(Gdx.graphics.getWidth() - 64), ran.nextInt(Gdx.graphics.getHeight() - 64),stage) ;
@@ -118,7 +121,6 @@ public class GameScreen implements Screen {
         tank.polygon.setPosition(tank.getX(),tank.getY());
         stage.act();
         System.out.println(kt);
-
 
 //        game.layout = new GlyphLayout();
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
@@ -139,7 +141,6 @@ public class GameScreen implements Screen {
                 }
             }
         });
-
     }
 
     @Override
@@ -148,13 +149,18 @@ public class GameScreen implements Screen {
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-        game.batch.draw(nen, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.font.draw(game.batch, "starfish:" + String.valueOf(starfish), 0, Gdx.graphics.getHeight());
-        if (starfish < 1 && timew < 0.1) {
-            game.batch.draw(win, Gdx.graphics.getWidth() / 2 - win.getWidth() / 2, Gdx.graphics.getHeight() / 2 - win.getHeight() / 2);
-            game.batch.draw(pressc, Gdx.graphics.getWidth() / 2 - pressc.getWidth() / 2, Gdx.graphics.getHeight() / 2 - pressc.getHeight() / 2 - gameover.getHeight() - 10);
-            kt = true;
-            stage.clear();
+        System.out.println(camera.position.x);
+        System.out.println(camera.position.y);
+        if (starfish < 1) {
+            sao.setPosition(9999,9999);baoquan.setPosition(9999,9999);haiquan.setPosition(9999,9999);bao.setPosition(9999,9999);nawn.setPosition(9999,9999);
+
+            if (starfish < 1 && timew < 0.1) {
+                kt = true;
+                stage.clear();
+                game.batch.draw(win, Gdx.graphics.getWidth() / 2 - win.getWidth() / 2, Gdx.graphics.getHeight() / 2 - win.getHeight() / 2);
+                game.batch.draw(pressc, Gdx.graphics.getWidth() / 2 - pressc.getWidth() / 2, Gdx.graphics.getHeight() / 2 - pressc.getHeight() / 2 - gameover.getHeight() - 10);
+            }
         }
         if (Intersector.overlapConvexPolygons(turtle.getPolygon(), tank.getPolygon())) {
             game.batch.draw(gameover, Gdx.graphics.getWidth() / 2 - gameover.getWidth() / 2, Gdx.graphics.getHeight() / 2 - gameover.getHeight() / 2 + 10);
@@ -165,6 +171,15 @@ public class GameScreen implements Screen {
         game.batch.end();
         if(kt == false){
             cd += 1/60f;
+
+            if((float) Gdx.graphics.getWidth() / 2 - turtle.getWidth() /2 <= turtle.getX() && turtle.getX()  <= (float) (Gdx.graphics.getWidth()*3 - Gdx.graphics.getWidth()/2) - turtle.getWidth()/2){
+                stage.getCamera().position.x = turtle.getX() + turtle.getWidth()/2;
+            if((float) Gdx.graphics.getHeight()/2 - turtle.getHeight()/2 <= turtle.getY() &&  turtle.getY() <=  (Gdx.graphics.getHeight()*2 + (float) Gdx.graphics.getHeight()/2) - turtle.getHeight()/2){
+                stage.getCamera().position.y = turtle.getY() + turtle.getHeight() /2;
+            }
+            System.out.println("x" + stage.getCamera().position.x);
+            System.out.println("y" + stage.getCamera().position.y);
+
             if(starfish < 1){
                 timew -= 1/60f;
             }
@@ -196,25 +211,12 @@ public class GameScreen implements Screen {
                 starfish += 2;
             }
             for (Shark thuy : sharks) {
-                if(tank.dan == 1){
+                if (tank.dan == 1) {
                     thuy.dan = 1;
                     thuy.duoi(turtle.getX(), turtle.getY());
 //                    thuy.rotateBy(-ran.nextInt(0,360));
                 }
-                for (Laze laser2 : lasers){
-                    if (Intersector.overlapConvexPolygons(laser2.getPolygon(), thuy.getPolygon())) {
-                        thuy.setPosition(9999,9999);
-                        thuy.remove();
-                        laser2.setPosition(999,999);
-                        laser2.remove();
-                    }
-                    if (Intersector.overlapConvexPolygons(laser2.getPolygon(), tank.getPolygon())) {
-                        tank.setPosition(9999,9999);
-                        tank.remove();
-                        laser2.setPosition(999,999);
-                        laser2.remove();
-                    }
-                }
+            }
             }
             for (Laze laser : lasers) {
                 if (Intersector.overlapConvexPolygons(laser.getPolygon(), rock.getPolygon())) {
@@ -332,12 +334,11 @@ public class GameScreen implements Screen {
                 dropSound.play();
                 starfish--;
             }
-
             stage.draw();
             stage.act();
             tank.duoi(turtle.getX(), turtle.getY());
             if(tank.dan == 1 && cd > 3){
-                Shark thuy = new Shark(Gdx.graphics.getWidth(),ran.nextInt(0,Gdx.graphics.getHeight()),stage);
+                Shark thuy = new Shark(nen.getWidth(),ran.nextInt(0, (int) nen.getHeight()),stage);
                 sharks.add(thuy);
                 cd = 0;
             }
